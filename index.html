@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#111922">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<title>CWA · Import Monitor</title>
+<style>
+:root{
+  --bg:#0f171f;--bg2:#0b1219;--side:#17232e;--side2:#121c26;--panel:#1a2935;--panel2:#20313f;
+  --line:rgba(255,255,255,.075);--line2:rgba(255,255,255,.12);--text:#eaf0f4;--muted:#97a7b4;
+  --muted2:#718493;--brand:#f4bd4f;--brand2:#ffd575;--cyan:#63cee9;--green:#63d9a5;--yellow:#f2c75b;
+  --red:#ef7583;--blue:#78a8ff;--sidebar:250px;--shadow:0 18px 46px rgba(0,0,0,.20)
+}
+*{box-sizing:border-box}html{color-scheme:dark;scroll-behavior:smooth}
+body{margin:0;min-height:100vh;color:var(--text);background:radial-gradient(circle at 84% -10%,rgba(69,132,175,.11),transparent 32%),linear-gradient(180deg,#111a23,#0d151d);font:14px/1.45 "Segoe UI",Inter,Roboto,Arial,sans-serif}
+button,a,select{font:inherit}.app{min-height:100vh;display:grid;grid-template-columns:var(--sidebar) 1fr}.main{min-width:0}
+.sidebar{height:100vh;position:sticky;top:0;overflow:auto;background:linear-gradient(180deg,var(--side),var(--side2));border-right:1px solid var(--line);box-shadow:8px 0 28px rgba(0,0,0,.11)}
+.brand{height:78px;display:flex;align-items:center;gap:12px;padding:0 20px;border-bottom:1px solid rgba(255,255,255,.05)}
+.brandmark{width:39px;height:39px;border-radius:11px;display:grid;place-items:center;background:linear-gradient(145deg,var(--brand2),var(--brand));color:#192027;font-size:20px;box-shadow:0 10px 28px rgba(244,189,79,.12)}
+.brandtext strong{display:block;color:var(--brand);font-size:15px}.brandtext span{font-size:11px;color:var(--muted2)}
+.nav-section{padding:18px 13px 6px}.nav-title{padding:0 10px 9px;color:#788a99;font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase}
+.nav-item{width:100%;display:flex;align-items:center;gap:11px;padding:10px 11px;margin:2px 0;border-radius:9px;border:1px solid transparent;background:transparent;color:#b8c3cc;text-decoration:none;cursor:pointer;text-align:left;transition:.16s ease}
+.nav-item:hover{background:rgba(255,255,255,.045);color:#fff}.nav-item.active{background:linear-gradient(90deg,rgba(244,189,79,.14),rgba(244,189,79,.03));border-color:rgba(244,189,79,.16);color:#f5d38d}.nav-badge{margin-left:auto;min-width:22px;padding:2px 7px;border-radius:999px;text-align:center;background:rgba(255,255,255,.07);font-size:10px;font-weight:700}
+.sidebar-bottom{margin-top:20px;padding:14px 20px 20px;border-top:1px solid rgba(255,255,255,.05);color:var(--muted2);font-size:11px}.build-mini{margin-top:8px;color:#637785}
+.topbar{height:78px;display:flex;align-items:center;justify-content:space-between;gap:18px;padding:0 26px;background:rgba(12,18,25,.76);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:10;backdrop-filter:blur(18px)}
+.page-title{font-size:18px;font-weight:700;letter-spacing:-.015em}.page-sub{font-size:11px;color:var(--muted)}.top-right{display:flex;gap:10px;align-items:center}.live{display:flex;gap:8px;align-items:center;color:var(--muted);font-size:12px;padding:8px 10px;border-radius:10px;border:1px solid var(--line);background:rgba(255,255,255,.03)}.live-dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 0 4px rgba(99,217,165,.08),0 0 12px rgba(99,217,165,.35)}
+.language-select{height:36px;border:1px solid var(--line);border-radius:9px;background:#18242e;color:var(--text);padding:0 9px;outline:none;cursor:pointer}.cwa-btn,.action-btn{display:inline-flex;align-items:center;gap:7px;padding:9px 12px;border-radius:9px;border:0;text-decoration:none;cursor:pointer;font-weight:700}.cwa-btn{color:#1a2026;background:linear-gradient(180deg,var(--brand2),var(--brand))}.action-btn{color:var(--text);background:rgba(255,255,255,.055);border:1px solid var(--line)}.action-btn:hover{background:rgba(255,255,255,.085)}
+.content{padding:24px 26px 34px;max-width:1720px;margin:auto}.view{display:none}.view.active{display:block}
+.hero{border:1px solid var(--line);border-radius:14px;overflow:hidden;background:linear-gradient(135deg,rgba(34,52,66,.96),rgba(24,36,48,.96));box-shadow:var(--shadow);position:relative}.hero:after{content:"";position:absolute;width:420px;height:420px;border-radius:50%;right:-150px;top:-220px;background:radial-gradient(circle,rgba(99,206,233,.08),transparent 68%);pointer-events:none}.hero-main{position:relative;z-index:1;display:flex;justify-content:space-between;gap:24px;padding:22px 24px 18px}.activity{display:flex;gap:13px;align-items:flex-start;min-width:0}.activity-icon{width:42px;height:42px;border-radius:11px;display:grid;place-items:center;flex:0 0 auto;background:rgba(99,217,165,.08);border:1px solid rgba(99,217,165,.18)}.activity-icon.processing{background:rgba(99,206,233,.08);border-color:rgba(99,206,233,.2)}.activity-icon.waiting{background:rgba(242,199,91,.08);border-color:rgba(242,199,91,.2)}.activity-icon.error,.activity-icon.stalled{background:rgba(239,117,131,.08);border-color:rgba(239,117,131,.2)}
+.pulse{width:11px;height:11px;border-radius:50%;background:var(--green);animation:pulse 1.7s infinite}.processing .pulse{background:var(--cyan)}.waiting .pulse{background:var(--yellow);animation:none}.error .pulse,.stalled .pulse{background:var(--red);animation:none}@keyframes pulse{70%{box-shadow:0 0 0 12px rgba(99,217,165,0)}}
+.eyebrow{color:var(--brand);font-size:10px;font-weight:800;letter-spacing:.11em;text-transform:uppercase;margin-bottom:4px}.activity h1{margin:0;font-size:22px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:950px}.activity p{margin:7px 0 0;color:var(--muted);max-width:1050px;overflow-wrap:anywhere}.hero-side{text-align:right;color:var(--muted);font-size:11px;line-height:1.7;white-space:nowrap}.progress-area{position:relative;z-index:1;padding:0 24px 22px}.progress-row{display:flex;justify-content:space-between;gap:12px;margin-bottom:8px;color:var(--muted);font-size:11px}.track{height:10px;border-radius:999px;background:rgba(0,0,0,.22);overflow:hidden;border:1px solid rgba(255,255,255,.035)}.bar{height:100%;width:0;background:linear-gradient(90deg,var(--brand),#f0cf78,var(--cyan));transition:width .4s}
+.metrics{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:14px;margin-top:14px}.metric{min-height:118px;padding:17px 18px;border-radius:13px;background:linear-gradient(180deg,var(--panel),#18242f);border:1px solid var(--line);position:relative;overflow:hidden}.metric:after{content:"";position:absolute;width:100px;height:100px;border-radius:50%;right:-45px;top:-45px;background:radial-gradient(circle,rgba(99,206,233,.08),transparent 70%)}.metric-label{font-size:10px;color:var(--muted);font-weight:800;letter-spacing:.09em;text-transform:uppercase}.metric-value{font-size:30px;font-weight:760;margin-top:8px;line-height:1;letter-spacing:-.035em}.metric-foot{position:absolute;left:18px;bottom:15px;color:var(--muted2);font-size:11px;max-width:80%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.panels{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(340px,.65fr);gap:14px;margin-top:14px}.panel,.full-panel{border-radius:13px;background:linear-gradient(180deg,var(--panel),#18242f);border:1px solid var(--line);overflow:hidden}.panel-head{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:17px 18px 12px;border-bottom:1px solid rgba(255,255,255,.045)}.panel-head h2{margin:0;font-size:14px}.panel-head p{margin:3px 0 0;font-size:11px;color:var(--muted2)}.badge{padding:5px 8px;border-radius:999px;color:var(--muted);font-size:10px;background:rgba(255,255,255,.04);border:1px solid var(--line)}.badge.warn{color:var(--yellow)}.badge.bad{color:var(--red)}.badge.good{color:var(--green)}
+.table-wrap{overflow:auto;padding:8px 10px 12px}table{width:100%;border-collapse:separate;border-spacing:0 6px;min-width:620px}th{padding:0 10px 4px;text-align:left;color:var(--muted2);font-size:10px;text-transform:uppercase;letter-spacing:.04em}td{padding:10px;background:rgba(255,255,255,.025);border-top:1px solid rgba(255,255,255,.035);border-bottom:1px solid rgba(255,255,255,.035)}td:first-child{border-left:1px solid rgba(255,255,255,.035);border-radius:8px 0 0 8px}td:last-child{border-right:1px solid rgba(255,255,255,.035);border-radius:0 8px 8px 0;color:var(--muted)}.file-name{font-size:12px;font-weight:650;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:850px}.file-path{font-size:10px;color:var(--muted2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:850px;margin-top:2px}
+.events{padding:7px 16px 13px;max-height:500px;overflow:auto}.event{display:grid;grid-template-columns:10px 1fr auto;gap:10px;padding:11px 2px;border-bottom:1px solid rgba(255,255,255,.045)}.event-dot{width:7px;height:7px;border-radius:50%;margin-top:5px;background:var(--blue)}.event-dot.success{background:var(--green)}.event-dot.error{background:var(--red)}.event-dot.processing{background:var(--cyan)}.event-dot.queued{background:var(--yellow)}.event-title{font-size:12px;font-weight:650}.event-detail{font-size:10px;color:var(--muted2);margin-top:2px;overflow-wrap:anywhere}.event-time{font-size:10px;color:var(--muted2);white-space:nowrap}
+.chart-wrap{padding:16px 18px 18px;height:180px}.chart-wrap svg{width:100%;height:100%;overflow:visible}.chart-grid{stroke:rgba(255,255,255,.06);stroke-width:1}.chart-area{fill:rgba(99,206,233,.08)}.chart-line{fill:none;stroke:var(--cyan);stroke-width:2}.chart-dot{fill:var(--cyan)}.chart-label{fill:var(--muted2);font-size:9px}
+.books-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px;padding:14px 16px 18px}.book-card{min-width:0;border:1px solid rgba(255,255,255,.055);background:rgba(255,255,255,.025);border-radius:10px;overflow:hidden}.cover{aspect-ratio:2/3;background:linear-gradient(145deg,#243645,#18252f);display:grid;place-items:center;color:var(--muted2);font-size:30px;overflow:hidden}.cover img{width:100%;height:100%;object-fit:cover;display:block}.book-copy{padding:9px}.book-title{font-size:11px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.book-author{font-size:9px;color:var(--muted2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:3px}
+.section-title{margin:0 0 14px;font-size:19px}.section-sub{margin:-7px 0 18px;color:var(--muted);font-size:12px}.library-grid,.system-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-bottom:14px}.format-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;padding:14px 16px 18px}.format-chip{padding:12px;border:1px solid var(--line);border-radius:9px;background:rgba(255,255,255,.025)}.format-chip strong{font-size:16px}.format-chip span{display:block;color:var(--muted2);font-size:10px;margin-top:3px}.empty{padding:34px;text-align:center;color:var(--muted2)}
+.details{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));margin-top:14px;border:1px solid var(--line);border-radius:13px;overflow:hidden;background:rgba(23,34,45,.86)}.detail{padding:14px 16px;border-right:1px solid rgba(255,255,255,.045)}.detail:last-child{border-right:0}.detail-label{font-size:9px;color:var(--muted2);font-weight:800;text-transform:uppercase}.detail-value{margin-top:4px;font-size:11px;color:#c7d0d7;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.system-row{padding:15px 18px;border-bottom:1px solid rgba(255,255,255,.045);display:grid;grid-template-columns:220px 1fr;gap:16px}.system-row:last-child{border-bottom:0}.system-key{color:var(--muted);font-size:11px}.system-value{font-size:12px;overflow-wrap:anywhere}.system-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.toast{position:fixed;right:22px;bottom:22px;z-index:50;max-width:420px;padding:11px 14px;border-radius:10px;border:1px solid var(--line2);background:#1b2935;color:var(--text);box-shadow:var(--shadow);opacity:0;transform:translateY(12px);pointer-events:none;transition:.2s}.toast.show{opacity:1;transform:translateY(0)}.toast.error{border-color:rgba(239,117,131,.35)}.toast.success{border-color:rgba(99,217,165,.35)}
+.auth-overlay{position:fixed;inset:0;z-index:80;display:grid;place-items:center;padding:20px;background:rgba(8,12,16,.72);backdrop-filter:blur(8px)}.auth-overlay[hidden]{display:none}.auth-card{width:min(420px,100%);padding:22px;border:1px solid var(--line2);border-radius:14px;background:#17232e;box-shadow:var(--shadow)}.auth-card h2{margin:0 0 8px;font-size:18px}.auth-card p{margin:0 0 14px;color:var(--muted);font-size:12px}.auth-card input{width:100%;height:40px;border:1px solid var(--line);border-radius:9px;background:#101920;color:var(--text);padding:0 12px}.auth-card .action-btn{margin-top:12px}.auth-error{min-height:18px;margin-top:8px;color:var(--red);font-size:12px}
+.footer{display:flex;justify-content:space-between;gap:12px;color:var(--muted2);font-size:10px;padding:15px 2px 0}
+@media(max-width:1350px){.metrics{grid-template-columns:repeat(3,1fr)}.books-grid{grid-template-columns:repeat(4,1fr)}.format-grid{grid-template-columns:repeat(4,1fr)}}
+@media(max-width:1100px){:root{--sidebar:210px}.panels{grid-template-columns:1fr}.library-grid,.system-grid{grid-template-columns:repeat(2,1fr)}.books-grid{grid-template-columns:repeat(3,1fr)}.details{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:780px){.app{display:block}.sidebar{display:none}.topbar{height:auto;min-height:68px;padding:12px 14px}.page-sub,.live{display:none}.content{padding:14px}.hero-main{flex-direction:column;padding:17px}.hero-side{text-align:left}.progress-area{padding:0 17px 17px}.metrics,.library-grid,.system-grid{grid-template-columns:1fr 1fr}.books-grid{grid-template-columns:repeat(2,1fr)}.details{grid-template-columns:1fr}.top-right{gap:6px}.language-select{max-width:140px}.system-row{grid-template-columns:1fr}}
+@media(max-width:520px){.metrics,.library-grid,.system-grid{grid-template-columns:1fr}.format-grid{grid-template-columns:repeat(2,1fr)}.cwa-btn{display:none}.books-grid{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="sidebar">
+  <div class="brand">
+    <div class="brandmark">📚</div>
+    <div class="brandtext"><strong data-i18n="app.brand">Calibre-Web</strong><span data-i18n="app.subtitle">Automated · Monitor</span></div>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-title" data-i18n="nav.monitoring">Мониторинг</div>
+    <button class="nav-item active" data-view="overview">▦ <span data-i18n="nav.overview">Обзор</span></button>
+    <button class="nav-item" data-view="queue">☷ <span data-i18n="nav.queue">Очередь</span><span class="nav-badge" id="navQueue">—</span></button>
+    <button class="nav-item" data-view="events">◷ <span data-i18n="nav.events">События</span></button>
+    <button class="nav-item" data-view="library">▣ <span data-i18n="nav.library">Библиотека</span><span class="nav-badge" id="navBooks">—</span></button>
+    <button class="nav-item" data-view="errors">⚠ <span data-i18n="nav.errors">Ошибки</span><span class="nav-badge" id="navErrors">0</span></button>
+    <button class="nav-item" data-view="system">⚙ <span data-i18n="nav.system">Система</span></button>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-title" data-i18n="nav.cwa">CWA</div>
+    <a class="nav-item" id="sideCwaLink" href="#" target="_blank" rel="noopener">↗ <span data-i18n="nav.open_cwa">Открыть CWA</span></a>
+  </div>
+
+  <div class="sidebar-bottom">
+    <span data-i18n="sidebar.readonly">Монитор работает только на чтение.</span>
+    <div class="build-mini" id="sidebarBuild">—</div>
+  </div>
+</aside>
+
+<section class="main">
+<header class="topbar">
+  <div><div class="page-title" id="pageTitle">Монитор импорта</div><div class="page-sub" id="pageSub">Текущий статус ingest Calibre-Web Automated</div></div>
+  <div class="top-right">
+    <div class="live"><span class="live-dot"></span><span id="liveText">…</span></div>
+    <select class="language-select" id="languageSelect" aria-label="Language"></select>
+    <a class="cwa-btn" id="cwaLink" href="#" target="_blank" rel="noopener">↗ <span data-i18n="nav.open_cwa">Открыть CWA</span></a>
+  </div>
+</header>
+
+<main class="content">
+<section class="view active" id="view-overview">
+  <section class="hero">
+    <div class="hero-main">
+      <div class="activity">
+        <div class="activity-icon" id="activityOrb"><span class="pulse"></span></div>
+        <div><div class="eyebrow" data-i18n="hero.current_operation">Текущая операция</div><h1 id="activityTitle">…</h1><p id="activityDetail">…</p></div>
+      </div>
+      <div class="hero-side"><div id="statusAge">—</div><div id="statusSource">—</div></div>
+    </div>
+    <div class="progress-area"><div class="progress-row"><span id="progressText">—</span><strong id="progressPct">0%</strong></div><div class="track"><div class="bar" id="progressBar"></div></div></div>
+  </section>
+
+  <section class="metrics">
+    <article class="metric"><div class="metric-label" data-i18n="metric.queue">В очереди</div><div class="metric-value" id="queueCount">—</div><div class="metric-foot" id="queueSize">—</div></article>
+    <article class="metric"><div class="metric-label" data-i18n="metric.processed">Обработано</div><div class="metric-value" id="processedCount">—</div><div class="metric-foot" data-i18n="metric.since_start">с запуска монитора</div></article>
+    <article class="metric"><div class="metric-label" data-i18n="metric.speed">Скорость</div><div class="metric-value" id="rateValue">—</div><div class="metric-foot" id="etaValue">—</div></article>
+    <article class="metric"><div class="metric-label" data-i18n="metric.library">В библиотеке</div><div class="metric-value" id="libraryBooks">—</div><div class="metric-foot" id="libraryMeta">—</div></article>
+    <article class="metric"><div class="metric-label" data-i18n="metric.batch">Текущая партия</div><div class="metric-value" id="batchValue">—</div><div class="metric-foot" id="batchFoot">—</div></article>
+  </section>
+
+  <section class="panels">
+    <article class="panel"><div class="panel-head"><div><h2 data-i18n="overview.queue.title">Очередь импорта</h2><p data-i18n="overview.queue.subtitle">Первые файлы, оставшиеся в Inbox</p></div><div id="retryBadge" class="badge">—</div></div><div class="table-wrap"><table><thead><tr><th data-i18n="common.file">Файл</th><th data-i18n="common.size">Размер</th></tr></thead><tbody id="queueBodyOverview"></tbody></table></div></article>
+    <article class="panel"><div class="panel-head"><div><h2 data-i18n="overview.events.title">События</h2><p data-i18n="overview.events.subtitle">Последние события текущей партии</p></div><div id="failedBadge" class="badge">—</div></div><div class="events" id="eventsOverview"></div></article>
+  </section>
+
+  <section class="panels">
+    <article class="panel"><div class="panel-head"><div><h2 data-i18n="overview.speed.title">Скорость за последний час</h2><p data-i18n="overview.speed.subtitle">Количество обработанных файлов по минутам</p></div><div class="badge" id="rateBadges">—</div></div><div class="chart-wrap"><svg id="speedChart" viewBox="0 0 760 145" preserveAspectRatio="none"></svg></div></article>
+    <article class="panel"><div class="panel-head"><div><h2 data-i18n="overview.latest.title">Последние книги</h2><p data-i18n="overview.latest.subtitle">Недавно добавленные записи Calibre</p></div></div><div class="books-grid" id="latestBooksOverview"></div></article>
+  </section>
+
+  <section class="details">
+    <div class="detail"><div class="detail-label" data-i18n="details.inbox">Inbox</div><div class="detail-value" id="detailInbox">—</div></div>
+    <div class="detail"><div class="detail-label" data-i18n="details.library">Library</div><div class="detail-value" id="detailLibrary">—</div></div>
+    <div class="detail"><div class="detail-label" data-i18n="details.status_source">Status source</div><div class="detail-value" id="detailStatus">—</div></div>
+    <div class="detail"><div class="detail-label" data-i18n="details.monitor">Монитор</div><div class="detail-value" id="detailMonitor">—</div></div>
+  </section>
+</section>
+
+<section class="view" id="view-queue">
+  <h1 class="section-title" data-i18n="page.queue.title">Очередь импорта</h1><p class="section-sub" data-i18n="queue.description">Файлы, которые монитор сейчас видит в Inbox.</p>
+  <article class="full-panel"><div class="panel-head"><div><h2 id="queueFullTitle">—</h2><p id="queueFullSub">—</p></div></div><div class="table-wrap"><table><thead><tr><th data-i18n="common.file">Файл</th><th data-i18n="common.size">Размер</th></tr></thead><tbody id="queueBodyFull"></tbody></table></div></article>
+</section>
+
+<section class="view" id="view-events">
+  <h1 class="section-title" data-i18n="page.events.title">События</h1><p class="section-sub" data-i18n="events.description">Импорт, изменения библиотеки и состояние CWA.</p>
+  <article class="full-panel"><div class="panel-head"><div><h2 data-i18n="events.log">Журнал</h2><p data-i18n="events.auto">Новые события появляются автоматически.</p></div></div><div class="events" id="eventsFull"></div></article>
+</section>
+
+<section class="view" id="view-library">
+  <h1 class="section-title" data-i18n="page.library.title">Библиотека</h1><p class="section-sub" data-i18n="library.description">Состояние metadata.db, форматы и последние книги.</p>
+  <section class="library-grid">
+    <article class="metric"><div class="metric-label" data-i18n="common.books">Книги</div><div class="metric-value" id="libBooks2">—</div><div class="metric-foot" data-i18n="library.in_metadata">в metadata.db</div></article>
+    <article class="metric"><div class="metric-label" data-i18n="common.authors">Авторы</div><div class="metric-value" id="libAuthors2">—</div><div class="metric-foot" data-i18n="library.unique_authors">уникальных записей</div></article>
+    <article class="metric"><div class="metric-label" data-i18n="common.formats">Форматы</div><div class="metric-value" id="libFormats2">—</div><div class="metric-foot" id="libError2">—</div></article>
+  </section>
+  <article class="full-panel"><div class="panel-head"><div><h2 data-i18n="library.latest">Последние книги</h2><p data-i18n="library.latest_subtitle">Последние записи по ID Calibre.</p></div></div><div class="books-grid" id="latestBooksFull"></div><div class="table-wrap"><table><thead><tr><th data-i18n="common.id">ID</th><th data-i18n="common.author">Автор</th><th data-i18n="common.title">Название</th></tr></thead><tbody id="recentBooks"></tbody></table></div></article>
+  <article class="full-panel" style="margin-top:14px"><div class="panel-head"><div><h2 data-i18n="library.format_stats">Форматы библиотеки</h2></div></div><div class="format-grid" id="formatGrid"></div></article>
+</section>
+
+<section class="view" id="view-errors">
+  <h1 class="section-title" data-i18n="page.errors.title">Ошибки и Retry</h1><p class="section-sub" data-i18n="errors.description">Ошибки текущей сессии, failed-каталог и retry queue.</p>
+  <section class="panels">
+    <article class="panel"><div class="panel-head"><div><h2 data-i18n="errors.failed_files">Failed-файлы</h2><p data-i18n="errors.failed_subtitle">Файлы, найденные в каталоге failed CWA.</p></div><div class="badge bad" id="failedFilesBadge">0</div></div><div class="table-wrap"><table><thead><tr><th data-i18n="common.file">Файл</th><th data-i18n="common.size">Размер</th></tr></thead><tbody id="failedFilesBody"></tbody></table></div></article>
+    <article class="panel"><div class="panel-head"><div><h2 data-i18n="errors.retry_queue">Retry queue</h2><p data-i18n="errors.retry_subtitle">Элементы, ожидающие повторной обработки.</p></div><div class="badge warn" id="retryCountBadge">0</div></div><div class="events" id="retryItems"></div></article>
+  </section>
+  <article class="full-panel" style="margin-top:14px"><div class="panel-head"><div><h2 data-i18n="errors.events">События ошибок</h2></div></div><div class="events" id="errorEvents"></div></article>
+</section>
+
+<section class="view" id="view-system">
+  <h1 class="section-title" data-i18n="page.system.title">Система</h1><p class="section-sub" data-i18n="system.description">Версия билда, языковые файлы и Telegram.</p>
+  <section class="system-grid">
+    <article class="metric"><div class="metric-label" data-i18n="system.version">Версия</div><div class="metric-value" id="systemVersion">—</div><div class="metric-foot">CWA Import Monitor</div></article>
+    <article class="metric"><div class="metric-label" data-i18n="system.build">Build</div><div class="metric-value" id="systemBuild">—</div><div class="metric-foot" id="systemLangCount">—</div></article>
+    <article class="metric"><div class="metric-label" data-i18n="system.telegram">Telegram</div><div class="metric-value" id="telegramState">—</div><div class="metric-foot" id="telegramConfig">—</div></article>
+  </section>
+  <article class="full-panel">
+    <div class="system-row"><div class="system-key" data-i18n="system.auth">Доступ к API</div><div class="system-value" id="authState">—</div></div>
+    <div class="system-row"><div class="system-key" data-i18n="system.language">Язык интерфейса</div><div class="system-value" id="systemLanguage">—</div></div>
+    <div class="system-row"><div class="system-key" data-i18n="system.language_dir">Каталог внешних языков</div><div class="system-value"><code id="systemLangDir">—</code><div style="margin-top:6px;color:var(--muted2)" data-i18n="system.external_languages">Чтобы добавить язык, положи новый JSON-файл в каталог lang.</div></div></div>
+    <div class="system-row"><div class="system-key"><span data-i18n="system.telegram">Telegram</span><div style="margin-top:4px;color:var(--muted2)" data-i18n="system.telegram_subtitle">Уведомления о статусе импорта.</div></div><div class="system-value"><div id="telegramDetails">—</div><div class="system-actions"><button class="action-btn" id="telegramTestBtn" data-i18n="system.telegram_test">Отправить тест</button><button class="action-btn" id="telegramStatusBtn" data-i18n="system.telegram_status">Отправить текущий статус</button></div></div></div>
+  </article>
+</section>
+
+<footer class="footer"><span id="footerVersion">—</span><span id="updated">—</span></footer>
+</main>
+</section>
+</div>
+<div class="toast" id="toast"></div>
+<div class="auth-overlay" id="authOverlay" hidden>
+  <form class="auth-card" id="authForm">
+    <h2 data-i18n="auth.title">Доступ к монитору</h2>
+    <p data-i18n="auth.help">Введите токен доступа, чтобы открыть статус импорта и обложки.</p>
+    <input id="authToken" type="password" autocomplete="current-password" data-i18n-placeholder="auth.label" placeholder="Токен доступа">
+    <button class="action-btn" type="submit" data-i18n="auth.submit">Войти</button>
+    <div class="auth-error" id="authError"></div>
+  </form>
+</div>
+<script>
+const $=id=>document.getElementById(id);
+let lastData=null;
+let languageCatalog=[];
+let lang={meta:{code:"ru",name:"Русский",flag:"🇷🇺",locale:"ru-RU"},strings:{}};
+let fallbackStrings={};
+const pageKeys={
+  overview:["page.overview.title","page.overview.subtitle"],
+  queue:["page.queue.title","page.queue.subtitle"],
+  events:["page.events.title","page.events.subtitle"],
+  library:["page.library.title","page.library.subtitle"],
+  errors:["page.errors.title","page.errors.subtitle"],
+  system:["page.system.title","page.system.subtitle"]
+};
+function esc(v){return String(v??"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;")}
+function t(key,params={}){let value=lang.strings?.[key]??fallbackStrings[key]??key;return String(value).replace(/\{([^}]+)\}/g,(m,k)=>Object.prototype.hasOwnProperty.call(params,k)?String(params[k]):m)}
+function locale(){return lang.meta?.locale||"ru-RU"}
+function n(value){return Number(value??0).toLocaleString(locale())}
+function formatBytes(bytes){bytes=Number(bytes||0);const units=["B","KiB","MiB","GiB","TiB"];let i=0;while(bytes>=1024&&i<units.length-1){bytes/=1024;i++}return `${i===0?Math.round(bytes):bytes.toFixed(1)} ${units[i]}`}
+function duration(seconds){if(seconds===null||seconds===undefined)return"—";seconds=Math.max(0,Number(seconds||0));if(seconds<60)return t("time.seconds",{value:Math.floor(seconds)});if(seconds<3600)return t("time.minutes",{value:Math.floor(seconds/60)});if(seconds<86400)return t("time.hours_minutes",{hours:Math.floor(seconds/3600),minutes:Math.floor((seconds%3600)/60)});return t("time.days_hours",{days:Math.floor(seconds/86400),hours:Math.floor((seconds%86400)/3600)})}
+function relTime(seconds){if(seconds==null)return"—";if(seconds<5)return t("time.just_now");if(seconds<60)return t("time.seconds_ago",{value:seconds});if(seconds<3600)return t("time.minutes_ago",{value:Math.floor(seconds/60)});return t("time.hours_ago",{value:Math.floor(seconds/3600)})}
+function clock(ts){return ts?new Date(ts*1000).toLocaleTimeString(locale(),{hour:"2-digit",minute:"2-digit",second:"2-digit"}):"—"}
+function applyStaticTranslations(){document.documentElement.lang=lang.meta?.code||"en";document.querySelectorAll("[data-i18n]").forEach(el=>{el.textContent=t(el.dataset.i18n)});document.querySelectorAll("[data-i18n-placeholder]").forEach(el=>{el.placeholder=t(el.dataset.i18nPlaceholder)});const current=location.hash.replace("#","")||"overview";updatePageTitle(current)}
+function showAuth(){const overlay=$("authOverlay");if(!overlay.hidden)return;overlay.hidden=false;$("authToken").focus()}
+function hideAuth(){$("authOverlay").hidden=true;$("authError").textContent=""}
+async function initAuth(){try{const r=await fetch("/api/auth",{cache:"no-store",credentials:"same-origin"});const data=await r.json();if(data.required&&!data.authorized)showAuth()}catch(err){console.error(err)}}
+async function submitAuth(event){event.preventDefault();$("authError").textContent="";try{const r=await fetch("/api/login",{method:"POST",credentials:"same-origin",cache:"no-store",headers:{"Content-Type":"application/json"},body:JSON.stringify({token:$("authToken").value})});const data=await r.json();if(!r.ok||!data.ok)throw new Error(data.error||`HTTP ${r.status}`);$("authToken").value="";hideAuth();await refresh()}catch(err){$("authError").textContent=t(err.message==="invalid_token"?"auth.invalid":"auth.failed")}}
+async function loadLanguage(code){const fallbackCode=(languageCatalog.find(x=>x.code==="ru")?"ru":(languageCatalog[0]?.code||"en"));try{const f=await fetch(`/lang/${encodeURIComponent(fallbackCode)}.json`,{cache:"no-store"});fallbackStrings=(await f.json()).strings||{}}catch{fallbackStrings={}}try{const r=await fetch(`/lang/${encodeURIComponent(code)}.json`,{cache:"no-store"});if(!r.ok)throw new Error(`HTTP ${r.status}`);lang=await r.json()}catch{lang={meta:{code:fallbackCode,name:fallbackCode,flag:"🌐",locale:"en-US"},strings:fallbackStrings}}localStorage.setItem("cwa-monitor-language",lang.meta?.code||code);applyStaticTranslations();if(lastData)render(lastData)}
+async function initLanguages(){try{const r=await fetch("/api/languages",{cache:"no-store"});const data=await r.json();languageCatalog=data.languages||[];const select=$("languageSelect");select.innerHTML=languageCatalog.map(x=>`<option value="${esc(x.code)}">${esc(x.flag)} ${esc(x.name)}</option>`).join("");const saved=localStorage.getItem("cwa-monitor-language");const selected=languageCatalog.some(x=>x.code===saved)?saved:(data.default||languageCatalog[0]?.code||"ru");select.value=selected;select.addEventListener("change",()=>loadLanguage(select.value));await loadLanguage(selected)}catch(err){console.error(err);applyStaticTranslations()}}
+function updatePageTitle(name){const keys=pageKeys[name]||pageKeys.overview;$("pageTitle").textContent=t(keys[0]);$("pageSub").textContent=t(keys[1])}
+function showView(name){if(!pageKeys[name])name="overview";document.querySelectorAll(".view").forEach(x=>x.classList.remove("active"));document.querySelectorAll(".nav-item[data-view]").forEach(x=>x.classList.remove("active"));$(`view-${name}`)?.classList.add("active");document.querySelector(`.nav-item[data-view="${name}"]`)?.classList.add("active");updatePageTitle(name);history.replaceState(null,"",`#${name}`);window.scrollTo({top:0,behavior:"smooth"})}
+document.querySelectorAll(".nav-item[data-view]").forEach(btn=>btn.addEventListener("click",()=>showView(btn.dataset.view)));window.addEventListener("hashchange",()=>showView(location.hash.replace("#","")||"overview"));
+function eventTitle(ev){return ev.key?t(ev.key,ev.params||{}):(ev.title||"")}
+function renderEvents(target,items,limit){const list=limit?items.slice(0,limit):items;if(!list.length){target.innerHTML=`<div class="empty">${esc(t("common.no_events"))}</div>`;return}target.innerHTML=list.map(ev=>`<div class="event"><span class="event-dot ${esc(ev.kind)}"></span><div><div class="event-title">${esc(eventTitle(ev))}</div>${ev.detail?`<div class="event-detail">${esc(ev.detail)}</div>`:""}</div><div class="event-time">${clock(ev.time)}</div></div>`).join("")}
+function renderQueue(target,items,limit){const list=limit?items.slice(0,limit):items;if(!list.length){target.innerHTML=`<tr><td colspan="2"><div class="empty">${esc(t("common.queue_empty"))}</div></td></tr>`;return}target.innerHTML=list.map(i=>`<tr><td><div class="file-name" title="${esc(i.path)}">${esc(i.name)}</div><div class="file-path">${esc(i.path)}</div></td><td>${esc(i.size_h||formatBytes(i.size))}</td></tr>`).join("")}
+function renderBookCards(target,books,limit){const list=(books||[]).slice(0,limit);if(!list.length){target.innerHTML=`<div class="empty">${esc(t("common.no_data"))}</div>`;return}target.innerHTML=list.map(b=>`<article class="book-card"><div class="cover">${b.has_cover?`<img src="/api/cover?book_id=${b.id}" alt="" onerror="this.remove();this.parentElement.textContent='📖'">`:"📖"}</div><div class="book-copy"><div class="book-title" title="${esc(b.title)}">${esc(b.title)}</div><div class="book-author" title="${esc(b.authors)}">${esc(b.authors)}</div></div></article>`).join("")}
+function renderSpeedChart(history){const svg=$("speedChart");const data=history||[];if(!data.length){svg.innerHTML="";return}const width=760,height=145,pad=18,max=Math.max(1,...data.map(x=>Number(x.count||0)));const pts=data.map((x,i)=>{const px=pad+i*(width-pad*2)/Math.max(1,data.length-1);const py=height-pad-(Number(x.count||0)/max)*(height-pad*2);return[px,py,x]}),line=pts.map(p=>`${p[0].toFixed(1)},${p[1].toFixed(1)}`).join(" "),area=`${pad},${height-pad} ${line} ${width-pad},${height-pad}`;let grid="";for(let i=0;i<=3;i++){const y=pad+i*(height-pad*2)/3;grid+=`<line class="chart-grid" x1="${pad}" y1="${y}" x2="${width-pad}" y2="${y}"/>`}const labels=[0,29,59].filter(i=>i<data.length).map(i=>{const p=pts[i];return `<text class="chart-label" x="${p[0]}" y="${height-2}" text-anchor="${i===0?'start':i===59?'end':'middle'}">${new Date(data[i].ts*1000).toLocaleTimeString(locale(),{hour:'2-digit',minute:'2-digit'})}</text>`}).join("");svg.innerHTML=`${grid}<polygon class="chart-area" points="${area}"/><polyline class="chart-line" points="${line}"/>${labels}<text class="chart-label" x="${pad}" y="12">max ${max}/min</text>`}
+function renderFormats(items){const box=$("formatGrid");if(!items?.length){box.innerHTML=`<div class="empty">${esc(t("common.no_data"))}</div>`;return}box.innerHTML=items.map(x=>`<div class="format-chip"><strong>${esc(x.format)}</strong><span>${n(x.count)}</span></div>`).join("")}
+function renderFailed(items){const body=$("failedFilesBody");if(!items?.length){body.innerHTML=`<tr><td colspan="2"><div class="empty">${esc(t("errors.no_failed"))}</div></td></tr>`;return}body.innerHTML=items.map(i=>`<tr><td><div class="file-name">${esc(i.name)}</div><div class="file-path">${esc(i.path)}</div></td><td>${esc(i.size_h)}</td></tr>`).join("")}
+function renderRetry(items){const box=$("retryItems");if(!items?.length){box.innerHTML=`<div class="empty">${esc(t("errors.no_retry"))}</div>`;return}box.innerHTML=items.map((item,i)=>`<div class="event"><span class="event-dot queued"></span><div><div class="event-title">${esc(item)}</div></div><div class="event-time">#${i+1}</div></div>`).join("")}
+function render(d){lastData=d;const cwa=d.links.cwa||"#";$("cwaLink").href=cwa;$("sideCwaLink").href=cwa;$("sidebarBuild").textContent=t("footer.version",d.build);$("footerVersion").textContent=`CWA Import Monitor · ${t("footer.version",d.build)} · ${t("footer.readonly")}`;
+  $("queueCount").textContent=n(d.queue.count);$("queueSize").textContent=d.queue.size_h||formatBytes(d.queue.size);$("processedCount").textContent=n(d.session.processed);$("libraryBooks").textContent=d.library.books==null?"—":n(d.library.books);$("libraryMeta").textContent=d.library.available?t("metric.authors",{count:n(d.library.authors||0)}):(d.library.error||t("metric.db_unavailable"));$("navQueue").textContent=n(d.queue.count);$("navBooks").textContent=d.library.books==null?"—":n(d.library.books);const errorsTotal=Number(d.errors?.failed?.count||0)+Number(d.retry?.count||0);$("navErrors").textContent=n(errorsTotal);
+  const b=d.batch||{};const pct=Number(b.progress||0);$("progressBar").style.width=`${pct}%`;$("progressPct").textContent=`${pct.toFixed(1)}%`;$("progressText").textContent=b.active?t("batch.progress",{handled:n(b.handled||0),total:n(b.total||0),remaining:n(b.remaining||0)}):t("batch.no_active");$("batchValue").textContent=b.active?`#${b.id}`:"—";$("batchFoot").textContent=b.active?t("batch.duration",{duration:duration(b.duration_seconds)}):t("batch.no_active");
+  const rate30=Number(d.rates?.["30m"]||0);$("rateValue").textContent=rate30>0?t("metric.per_hour",{rate:rate30.toFixed(1)}):"—";$("etaValue").textContent=t("metric.eta",{eta:b.active?(b.eta_seconds==null?"—":duration(b.eta_seconds)):t("metric.ready")});$("rateBadges").textContent=`5m ${Number(d.rates?.["5m"]||0).toFixed(0)} · 30m ${rate30.toFixed(0)} · 60m ${Number(d.rates?.["60m"]||0).toFixed(0)}`;
+  const s=d.ingest_status||{},filename=s.file?String(s.file).split(/[\\/]/).pop():"";let title,detail;if(d.activity==="stalled"){title=t("status.stalled");detail=t("status.stalled_detail",{duration:duration(b.stalled_seconds),count:n(d.queue.count)})}else if(d.activity==="processing"){title=filename?t("status.processing_file",{file:filename}):t("status.processing");detail=s.detail||s.raw||t("status.default_processing")}else if(d.activity==="error"){title=t("status.error");detail=s.detail||s.raw||""}else if(d.queue.count>0){title=t("status.inbox_count",{count:n(d.queue.count)});detail=t("status.default_processing")}else{title=t("status.queue_empty");detail=t("status.no_new_books")}$("activityTitle").textContent=title;$("activityDetail").textContent=detail;$("activityOrb").className=`activity-icon ${d.activity||""}`;$("statusAge").textContent=s.available?t("status.age",{age:relTime(s.age_seconds)}):t("status.file_not_found");$("statusSource").textContent=s.path?t("status.source",{source:s.path}):t("status.source_default");
+  const retry=d.retry||{};$("retryBadge").textContent=retry.available?t("common.retry",{count:n(retry.count)}):t("common.retry_no_file");$("failedBadge").textContent=t("common.errors",{count:n(d.session.failed)});renderQueue($("queueBodyOverview"),d.queue.items,12);renderQueue($("queueBodyFull"),d.queue.items,null);renderEvents($("eventsOverview"),d.events,12);renderEvents($("eventsFull"),d.events,null);$("queueFullTitle").textContent=t("queue.count",{count:n(d.queue.count)});$("queueFullSub").textContent=t("queue.summary",{size:d.queue.size_h||formatBytes(d.queue.size)});
+  $("detailInbox").textContent=d.paths.inbox;$("detailLibrary").textContent=d.paths.library;$("detailStatus").textContent=s.path||"Inbox + metadata.db";$("detailMonitor").textContent=t("details.uptime_poll",{uptime:duration(d.session.uptime_seconds),poll:d.monitor.poll_seconds});
+  $("libBooks2").textContent=d.library.books==null?"—":n(d.library.books);$("libAuthors2").textContent=d.library.authors==null?"—":n(d.library.authors);$("libFormats2").textContent=d.library.formats==null?"—":n(d.library.formats);$("libError2").textContent=d.library.available?t("library.db_available"):(d.library.error||t("metric.db_unavailable"));const recent=d.library.recent||[];$("recentBooks").innerHTML=recent.length?recent.map(book=>`<tr><td>${book.id}</td><td>${esc(book.authors)}</td><td>${esc(book.title)}</td></tr>`).join(""):`<tr><td colspan="3"><div class="empty">${esc(d.library.error||t("common.no_data"))}</div></td></tr>`;renderBookCards($("latestBooksOverview"),recent,6);renderBookCards($("latestBooksFull"),recent,12);renderFormats(d.library.format_stats||[]);renderSpeedChart(d.speed_history||[]);
+  const failed=d.errors?.failed||{};$("failedFilesBadge").textContent=n(failed.count||0);$("retryCountBadge").textContent=n(retry.count||0);renderFailed(failed.items||[]);renderRetry(retry.items||[]);const errorEvents=d.errors?.events||[];if(errorEvents.length)renderEvents($("errorEvents"),errorEvents,null);else $("errorEvents").innerHTML=`<div class="empty">${esc(t("errors.no_events"))}</div>`;
+  $("systemVersion").textContent=d.build.version;$("systemBuild").textContent=d.build.build;$("authState").textContent=t(d.auth?.required?"system.auth_on":"system.auth_off");$("systemLangCount").textContent=`${languageCatalog.length} languages`;$("systemLanguage").textContent=`${lang.meta?.flag||"🌐"} ${lang.meta?.name||lang.meta?.code}`;$("systemLangDir").textContent=d.paths.lang;const tg=d.telegram||{};$("telegramState").textContent=t(tg.enabled?"common.enabled":"common.disabled");$("telegramConfig").textContent=t(tg.configured?"common.configured":"common.not_configured");$("telegramDetails").innerHTML=`<strong>${esc(t("system.telegram_state"))}:</strong> ${esc(t(tg.enabled?"common.enabled":"common.disabled"))} · ${esc(t(tg.configured?"common.configured":"common.not_configured"))}<br><strong>${esc(t("system.telegram_language"))}:</strong> ${esc(tg.language||"—")}<br><strong>${esc(t("system.telegram_interval"))}:</strong> ${esc(duration(tg.progress_interval))}<br><strong>${esc(t("system.telegram_last_sent"))}:</strong> ${esc(tg.last_sent_at?clock(tg.last_sent_at):"—")}<br><strong>${esc(t("system.telegram_last_error"))}:</strong> ${esc(tg.last_error||"—")}`;$("telegramTestBtn").disabled=!tg.enabled;$("telegramStatusBtn").disabled=!tg.enabled;
+  $("updated").textContent=t("footer.updated",{time:new Date(d.now*1000).toLocaleTimeString(locale())});$("liveText").textContent=`${d.monitor.poll_seconds}s`;updatePageTitle(location.hash.replace("#","")||"overview")}
+function toast(message,type="success"){const el=$("toast");el.textContent=message;el.className=`toast ${type} show`;clearTimeout(window.__toastTimer);window.__toastTimer=setTimeout(()=>el.classList.remove("show"),3500)}
+function apiError(data,status){const code=data.error||"";if(code==="monitor_token_required")return t("system.token_required");if(code==="unauthorized"||code==="invalid_token")return t("auth.invalid");return data.message||code||`HTTP ${status}`}
+async function telegramAction(path){try{const r=await fetch(path,{method:"POST",cache:"no-store",credentials:"same-origin"});const data=await r.json();if(r.status===401){showAuth();throw new Error(t("auth.invalid"))}if(!r.ok||!data.ok)throw new Error(apiError(data,r.status));toast(t("system.telegram_action_ok"),"success");await refresh()}catch(err){toast(t("system.telegram_action_failed",{error:String(err.message||err)}),"error")}}
+$("telegramTestBtn").addEventListener("click",()=>telegramAction("/api/telegram/test"));$("telegramStatusBtn").addEventListener("click",()=>telegramAction("/api/telegram/status"));
+$("authForm").addEventListener("submit",submitAuth);
+async function refresh(){try{const r=await fetch("/api/status",{cache:"no-store",credentials:"same-origin"});if(r.status===401){showAuth();$("liveText").textContent="!";return}if(!r.ok)throw new Error(`HTTP ${r.status}`);hideAuth();render(await r.json())}catch(err){$("liveText").textContent="!";$("activityTitle").textContent=String(err);$("activityOrb").className="activity-icon error"}}
+(async()=>{await initLanguages();await initAuth();showView(location.hash.replace("#","")||"overview");await refresh();setInterval(refresh,2000)})();
+</script>
+</body>
+</html>

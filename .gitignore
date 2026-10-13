@@ -1,0 +1,27 @@
+# Runtime data
+data/*
+!data/.gitkeep
+
+# Secrets
+secrets/*
+!secrets/README.txt
+
+# Local configuration
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Editors / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Logs / temp
+*.log
+*.tmp

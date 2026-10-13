@@ -1,0 +1,88 @@
+services:
+  calibre-web-import-monitor:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: calibre-web-import-monitor
+    restart: unless-stopped
+
+    environment:
+      TZ: "${TZ:-UTC}"
+
+      APP_VERSION: "1.4.0"
+      BUILD_ID: "20261012.2"
+
+      PUID: "${PUID:-1000}"
+      PGID: "${PGID:-1000}"
+
+      PORT: "8087"
+      POLL_SECONDS: "${POLL_SECONDS:-1}"
+      EVENT_LIMIT: "${EVENT_LIMIT:-500}"
+
+      CWA_WEB_URL: "${CWA_WEB_URL:-http://127.0.0.1:8084}"
+
+      CWA_CONFIG_DIR: "/cwa-config"
+      CWA_INBOX_DIR: "/inbox"
+      CWA_LIBRARY_DIR: "/library"
+      DATA_DIR: "/data"
+
+      DEFAULT_LANGUAGE: "${DEFAULT_LANGUAGE:-en}"
+      LANG_DIR: "/lang"
+
+      STALL_THRESHOLD_SECONDS: "${STALL_THRESHOLD_SECONDS:-600}"
+      BATCH_COMPLETE_GRACE_SECONDS: "${BATCH_COMPLETE_GRACE_SECONDS:-20}"
+      LIBRARY_SCAN_SECONDS: "${LIBRARY_SCAN_SECONDS:-30}"
+      FAILED_SCAN_SECONDS: "${FAILED_SCAN_SECONDS:-15}"
+      HEALTH_STALE_SECONDS: "${HEALTH_STALE_SECONDS:-120}"
+
+      TELEGRAM_ENABLED: "${TELEGRAM_ENABLED:-false}"
+      TELEGRAM_LANGUAGE: "${TELEGRAM_LANGUAGE:-en}"
+      TELEGRAM_PROGRESS_INTERVAL: "${TELEGRAM_PROGRESS_INTERVAL:-900}"
+      TELEGRAM_NOTIFY_ERRORS: "${TELEGRAM_NOTIFY_ERRORS:-true}"
+      TELEGRAM_BOT_TOKEN_FILE: "/run/secrets/telegram_bot_token"
+      TELEGRAM_CHAT_ID_FILE: "/run/secrets/telegram_chat_id"
+      MONITOR_TOKEN_FILE: "/run/secrets/monitor_token"
+
+    ports:
+      - "${MONITOR_PORT:-8087}:8087"
+
+    volumes:
+      - "${CWA_CONFIG_PATH:-./example/config}:/cwa-config:ro"
+      - "${CWA_INBOX_PATH:-./example/inbox}:/inbox:ro"
+      - "${CWA_LIBRARY_PATH:-./example/library}:/library:ro"
+      - "${MONITOR_DATA_PATH:-./data}:/data"
+
+      # External language files override the built-in ru/en files.
+      - ./lang:/lang:ro
+
+      # Telegram credentials are stored outside the image.
+      - ./secrets:/run/secrets:ro
+
+    security_opt:
+      - no-new-privileges:true
+
+    # Do not add cap_drop: ALL on some NAS platforms: it can prevent traversal
+    # of the read-only Calibre library bind mount.
+    read_only: true
+
+    tmpfs:
+      - /tmp:size=32m,mode=1777
+
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python3",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8087/health', timeout=3).read()"
+        ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 45s
+
+    logging:
+      driver: json-file
+      options:
+        max-size: "5m"
+        max-file: "2"
